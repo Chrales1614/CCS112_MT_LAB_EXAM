@@ -35,7 +35,7 @@ const Register = () => {
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#f4f1ea", fontFamily: "'Playfair Display', serif" }}>
             <div className="card p-5 shadow-lg" style={{ maxWidth: "420px", backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #d3b17d", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-                <h2 className="text-center mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: "bold", color: "#8b6f47" }}>Create an Account</h2>
+                <h2 className="text-center mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: "bold", color: "#8b6f47" }}>Create Account</h2>
                 {error && <p className="alert alert-danger">{error}</p>}
                 {success && (
                     <div className="alert alert-success d-flex align-items-center justify-content-center">
@@ -54,10 +54,7 @@ const Register = () => {
                         <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="form-control" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }} />
                     </div>
                     <div className="mb-3">
-                        <select name="role" value={formData.role} onChange={handleChange} className="form-select" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}>
-                            <option value="customer">Customer</option>
-                            <option value="admin">Admin</option>
-                        </select>
+                        <option value="customer"  style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}>Customer</option>
                     </div>
                     <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Register</button>
                 </form>

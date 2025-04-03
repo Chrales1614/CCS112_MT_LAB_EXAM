@@ -12,9 +12,9 @@ class UsersTableSeeder extends Seeder
     {
         User::insert([
             [
-                'name' => 'seller',
-                'email' => 'seller@gmail.com',
-                'password' => Hash::make('seller'),
+                'name' => 'Admin',
+                'email' => 'admin@gmail.com',
+                'password' => Hash::make('password'),
                 'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -22,7 +22,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'Customer',
                 'email' => 'customer@gmail.com',
-                'password' => Hash::make('customer'),
+                'password' => Hash::make('password'),
                 'role' => 'customer',
                 'created_at' => now(),
                 'updated_at' => now(),
