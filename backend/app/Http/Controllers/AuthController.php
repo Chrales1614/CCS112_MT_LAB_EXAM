@@ -18,7 +18,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255', // 'name' is required and must be a string with a max length of 255 characters
             'email' => 'required|string|email|max:255|unique:users', // 'email' is required, must be a valid email, and must be unique in the 'users' table
             'password' => 'required|string|min:6', // 'password' is required and must be at least 6 characters long
-            'role' => 'required|in:customer,employee' // 'role' is required and must be either 'customer' or 'employee'
+            'role' => 'required|in:customer,admin' // 'role' is required and must be either 'customer' or 'employee'
         ]);
 
         // Create a new user record in the database with the validated data

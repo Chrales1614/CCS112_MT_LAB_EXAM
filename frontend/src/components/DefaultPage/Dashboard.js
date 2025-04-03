@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
-import EmployeeDashboard from '../EmployeePage/EmployeeDashboard';
+import AdminDashboard from '../AdminPage/AdminDashboard';
 import CustomerDashboard from '../CustomerPage/CustomerDashboard';
 import './Dashboard.css'; // Relative path to the Dashboard.css file
 
@@ -34,8 +34,8 @@ const Dashboard = () => {
             <Header cartCount={user.role === "customer" ? cartCount : null} />
 
             <main className="main-content">
-                {user.role === "employee" ? (
-                    <EmployeeDashboard />
+                {user.role === "admin" ? (
+                    <AdminDashboard />
                 ) : user.role === "customer" ? (
                     <CustomerDashboard />
                 ) : (

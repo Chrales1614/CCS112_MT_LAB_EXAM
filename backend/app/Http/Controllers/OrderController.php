@@ -63,7 +63,7 @@ class OrderController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -84,7 +84,7 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -108,7 +108,7 @@ class OrderController extends Controller
         $user = Auth::user();
 
         // Only employees can mark an order as complete
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

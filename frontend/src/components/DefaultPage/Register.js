@@ -56,7 +56,7 @@ const Register = () => {
                     <div className="mb-3">
                         <select name="role" value={formData.role} onChange={handleChange} className="form-select" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}>
                             <option value="customer">Customer</option>
-                            <option value="employee">Employee</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Register</button>

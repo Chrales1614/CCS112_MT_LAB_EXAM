@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const EmployeeProductsTable = () => {
+const AdminProductsTable = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -158,4 +158,4 @@ const EmployeeProductsTable = () => {
     );
 };
 
-export default EmployeeProductsTable;
+export default AdminProductsTable;

@@ -18,7 +18,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -46,7 +46,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -73,7 +73,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'employee') {
+        if (!$user || $user->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import EmployeeProductsTable from "./EmployeeProductsTable";
+import AdminProductsTable from "./AdminProductsTable";
 import OrdersTable from "./OrdersTable";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const EmployeeDashboard = () => {
+const  AdminDashboard = () => {
     const [view, setView] = useState("products");
     const [showAddModal, setShowAddModal] = useState(false);
     const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", stock: "", image: "" });
@@ -38,7 +38,7 @@ const EmployeeDashboard = () => {
          
 
                 <div className="text-center mb-4">
-                <h2 style={{ color: 'brown' }}>Employee Dashboard</h2>
+                <h2 style={{ color: 'brown' }}>Admin Dashboard</h2>
                     <p>Monitor sales and track inventory</p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
@@ -54,7 +54,7 @@ const EmployeeDashboard = () => {
                     {/* Wrap the table in a responsive container */}
                     {view === "products" ? (
                         <div className="table-responsive">
-                            <EmployeeProductsTable />
+                            <AdminProductsTable />
                         </div>
                     ) : (
                         <div className="table-responsive">
@@ -94,4 +94,4 @@ const EmployeeDashboard = () => {
     );
 };
 
-export default EmployeeDashboard;
+export default AdminDashboard;
