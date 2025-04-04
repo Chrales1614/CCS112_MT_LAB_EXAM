@@ -4,7 +4,7 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { CheckCircle } from "lucide-react";
 
-const Register = () => {
+const Register = ({ inModal = false, onSuccess = null }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "customer" });
     const [error, setError] = useState("");
@@ -25,13 +25,50 @@ const Register = () => {
                 }
             });
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("username", formData.name);
+            localStorage.setItem("role", formData.role);
+            
             setSuccess("Registration successful!");
-            setTimeout(() => navigate("/dashboard"), 2000);
+            
+            if (onSuccess && inModal) {
+                setTimeout(() => onSuccess(), 1500);
+            } else {
+                setTimeout(() => navigate("/dashboard"), 1500);
+            }
         } catch (err) {
             setError(err.response?.data?.message || "Registration failed");
         }
     };
 
+    // If inside a modal, render a simplified version
+    if (inModal) {
+        return (
+            <div>
+                {error && <p className="alert alert-danger">{error}</p>}
+                {success && (
+                    <div className="alert alert-success d-flex align-items-center justify-content-center">
+                        <CheckCircle className="me-2" size={20} />
+                        {success}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} required className="form-control" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }} />
+                    </div>
+                    <div className="mb-3">
+                        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="form-control" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }} />
+                    </div>
+                    <div className="mb-3">
+                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="form-control" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }} />
+                    </div>
+                    <input type="hidden" name="role" value="customer" />
+                    <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Register</button>
+                </form>
+            </div>
+        );
+    }
+
+    // Full page version
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#f4f1ea", fontFamily: "'Playfair Display', serif" }}>
             <div className="card p-5 shadow-lg" style={{ maxWidth: "420px", backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #d3b17d", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
@@ -53,9 +90,7 @@ const Register = () => {
                     <div className="mb-3">
                         <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="form-control" style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }} />
                     </div>
-                    <div className="mb-3">
-                        <option value="customer"  style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}>Customer</option>
-                    </div>
+                    <input type="hidden" name="role" value="customer" />
                     <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Register</button>
                 </form>
                 <p className="text-center mt-3" style={{ fontFamily: "'Playfair Display', serif", color: "#4a3b2f" }}>

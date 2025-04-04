@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/DefaultPage/Login";
 import Register from "./components/DefaultPage/Register";
 import Dashboard from "./components/DefaultPage/Dashboard";
-import Cart from "./components/CustomerPage/Cart"; // Make sure Cart.js exists and is correctly imported
+import Cart from "./components/CustomerPage/Cart";
 
 const isAuthenticated = () => !!localStorage.getItem("token");
 
@@ -15,21 +15,19 @@ function App() {
                 {/* Public Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-
+                
+                {/* Dashboard is always accessible, but will show login/register modals if not authenticated */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                
                 {/* Protected Route for Cart */}
                 <Route
                     path="/cart"
-                    element={isAuthenticated() ? <Cart /> : <Navigate to="/login" />}
+                    element={isAuthenticated() ? <Cart /> : <Navigate to="/dashboard" />}
                 />
 
-                {/* Protected Route for Dashboard */}
-                <Route
-                    path="/dashboard"
-                    element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />}
-                />
-
-                {/* Redirect unknown routes to login */}
-                <Route path="*" element={<Navigate to="/login" />} />
+                {/* Redirect unknown routes to dashboard */}
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+                <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
         </Router>
     );

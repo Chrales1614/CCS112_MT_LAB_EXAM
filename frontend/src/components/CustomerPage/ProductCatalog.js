@@ -1,23 +1,45 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import Login from "../DefaultPage/Login"; // Import Login component
 
 const ProductCatalog = ({ products }) => {
     const [showModal, setShowModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const handleShowModal = (product) => {
-        setSelectedProduct(product);
-        setQuantity(1);
-        setShowModal(true);
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+            // Show login modal if user is not authenticated
+            setSelectedProduct(product);
+            setShowLoginModal(true);
+        } else {
+            // Show add to cart modal if user is authenticated
+            setSelectedProduct(product);
+            setQuantity(1);
+            setShowModal(true);
+        }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setError(null);
+    };
+
+    const handleCloseLoginModal = () => {
+        setShowLoginModal(false);
+    };
+
+    const handleLoginSuccess = () => {
+        setShowLoginModal(false);
+        // After successful login, show the add to cart modal
+        setQuantity(1);
+        setShowModal(true);
     };
 
     const handleAddToCart = async () => {
@@ -41,7 +63,7 @@ const ProductCatalog = ({ products }) => {
                     quantity: quantity,
                 },
                 {
-                    headers: { Authorization: `Bearer ${token}` }, // ✅ Move headers here
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
     
@@ -56,20 +78,34 @@ const ProductCatalog = ({ products }) => {
 
     return (
         <div className="row">
+            <div className="col-12 mb-4">
+                <h3 className="text-dark mb-2">Featured Product:</h3>
+                <hr className="mb-4" />
+            </div>
+            
             {products.length === 0 ? (
                 <p>No products found.</p>
             ) : (
                 products.map((product) => (
                     <div key={product.id} className="col-md-4 mb-4">
-                        <div className="card">
-                            <img src={product.image} className="card-img-top" alt={product.name} />
-                            <div className="card-body">
+                        <div className="card h-100">
+                            <div style={{ height: "400px", overflow: "hidden" }}>
+                                <img 
+                                    src={product.image} 
+                                    className="card-img-top" 
+                                    alt={product.name} 
+                                    style={{ objectFit: "cover", height: "100%", width: "100%" }}
+                                />
+                            </div>
+                            <div className="card-body d-flex flex-column">
                                 <h5 className="card-title">{product.name}</h5>
-                                <p className="card-text">{product.description}</p>
-                                <p className="card-text"><strong>₱{product.price}</strong></p>
-                                <button className="btn btn-primary" onClick={() => handleShowModal(product)}>
-                                    Add to Cart
-                                </button>
+                                <p className="card-text flex-grow-1">{product.description}</p>
+                                <div className="mt-auto">
+                                    <p className="card-text"><strong>₱{product.price}</strong></p>
+                                    <button className="btn btn-primary w-100" onClick={() => handleShowModal(product)}>
+                                        Add to Cart
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -110,6 +146,22 @@ const ProductCatalog = ({ products }) => {
                     </Modal.Footer>
                 </Modal>
             )}
+
+            {/* Login Modal */}
+            <Modal show={showLoginModal} onHide={handleCloseLoginModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Login Required</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p className="mb-3">Please login to add products to your cart.</p>
+                    <Login inModal={true} onSuccess={handleLoginSuccess} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseLoginModal}>
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
