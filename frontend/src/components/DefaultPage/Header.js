@@ -1,3 +1,4 @@
+//Header.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -96,7 +97,7 @@ const Header = ({ cartCount = 0, isAuthenticated = false }) => {
                                         <Button 
                                             variant="outline-light" 
                                             className="me-3 rounded-pill border-0"
-                                            onClick={() => navigate("/dashboard")}
+                                            onClick={() => navigate("/customerdashboard")}
                                         >
                                             <Home size={20} className="me-1" />
                                             Home

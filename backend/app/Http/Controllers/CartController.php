@@ -63,13 +63,24 @@ class CartController extends Controller
         $cart = $cartItems->map(function ($cartItem) {
             return [
                 'id' => $cartItem->id,
-                'name' => $cartItem->product->name, // Ensure this exists
-                'price' => $cartItem->product->price, // Ensure this exists
+                'name' => $cartItem->product->name,
+                'price' => $cartItem->product->price,
                 'quantity' => $cartItem->quantity,
             ];
         });
 
         return response()->json($cart);
+    }
+
+    public function getCartCount()
+    {
+        $userId = Auth::id();
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $count = Cart::where('user_id', $userId)->sum('quantity');
+        return response()->json(['count' => $count]);
     }
 
     public function removeFromCart($id)
@@ -83,5 +94,39 @@ class CartController extends Controller
         $cartItem->delete();
 
         return response()->json(['message' => 'Item removed from cart']);
+    }
+
+    public function updateQuantity(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $userId = Auth::id();
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $cartItem = Cart::where('user_id', $userId)
+            ->with('product')
+            ->findOrFail($id);
+
+        // Check stock availability
+        if ($request->quantity > $cartItem->product->stock) {
+            return response()->json(['message' => 'Insufficient stock'], 400);
+        }
+
+        $cartItem->quantity = $request->quantity;
+        $cartItem->save();
+
+        return response()->json([
+            'message' => 'Quantity updated successfully',
+            'cart' => [
+                'id' => $cartItem->id,
+                'name' => $cartItem->product->name,
+                'price' => $cartItem->product->price,
+                'quantity' => $cartItem->quantity
+            ]
+        ]);
     }
 }
