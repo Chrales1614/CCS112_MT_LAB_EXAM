@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Dropdown } from "react-bootstrap";
 import axios from "axios";
 import Login from "../DefaultPage/Login"; // Import Login component
 
-const ProductCatalog = ({ products }) => {
+const ProductCatalog = ({ products: initialProducts }) => {
     const [showModal, setShowModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -11,6 +11,39 @@ const ProductCatalog = ({ products }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [hoveredButton, setHoveredButton] = useState(null); // Track which button is hovered
+    const [sortOption, setSortOption] = useState("default"); // Default sorting option
+    const [products, setProducts] = useState(initialProducts); // Local state for sorted products
+
+    // Apply sorting whenever sort option or products change
+    useEffect(() => {
+        sortProducts(sortOption);
+    }, [sortOption, initialProducts]);
+
+    // Sorting function
+    const sortProducts = (option) => {
+        let sortedProducts = [...initialProducts];
+        
+        switch (option) {
+            case "price-asc":
+                sortedProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                break;
+            case "price-desc":
+                sortedProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                break;
+            case "name-asc":
+                sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case "name-desc":
+                sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
+                break;
+            case "default":
+            default:
+                // Keep original order
+                break;
+        }
+        
+        setProducts(sortedProducts);
+    };
 
     const handleShowModal = (product) => {
         const token = localStorage.getItem("token");
@@ -76,8 +109,36 @@ const ProductCatalog = ({ products }) => {
     
     return (
         <div className="row">
-            <div className="col-12 mb-4">
+            <div className="col-12 mb-4 d-flex justify-content-between align-items-center">
                 <h3 className="text-dark mb-2">Featured Product:</h3>
+                <div className="sort-container">
+                    <Dropdown>
+                        <Dropdown.Toggle 
+                            variant="light" 
+                            id="dropdown-sort"
+                            style={{
+                                backgroundColor: "rgb(245, 245, 245)",
+                                borderColor: "#ddd"
+                            }}
+                        >
+                            {sortOption === "default" ? "Sort By" : 
+                             sortOption === "price-asc" ? "Price: Low to High" :
+                             sortOption === "price-desc" ? "Price: High to Low" :
+                             sortOption === "name-asc" ? "Name: A to Z" :
+                             "Name: Z to A"}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => setSortOption("default")}>Default</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setSortOption("price-asc")}>Price: Low to High</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setSortOption("price-desc")}>Price: High to Low</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setSortOption("name-asc")}>Name: A to Z</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setSortOption("name-desc")}>Name: Z to A</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </div>
+            </div>
+            <div className="col-12">
                 <hr className="mb-4" />
             </div>
 

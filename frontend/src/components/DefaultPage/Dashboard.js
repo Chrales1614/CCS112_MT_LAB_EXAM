@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Header from "./Header";
 import AdminDashboard from '../AdminPage/AdminDashboard';
 import CustomerDashboard from '../CustomerPage/CustomerDashboard';
@@ -30,19 +31,12 @@ const Dashboard = () => {
         try {
             if (!token) return;
             
-            // Replace with actual fetch code when backend is available
-            // For now, just simulating with a static value
-            setCartCount(3);
-            
-            // Uncomment this when backend is ready:
-            /*
             const response = await axios.get("http://localhost:8000/api/cart", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
             const totalItems = response.data.reduce((sum, item) => sum + item.quantity, 0);
             setCartCount(totalItems);
-            */
         } catch (err) {
             console.error("Failed to fetch cart count:", err);
         }

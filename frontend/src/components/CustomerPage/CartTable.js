@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner, Button } from "react-bootstrap";
 
-const CartTable = () => {
+const CartTable = ({ summaryMode, onCartUpdate }) => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,27 +15,6 @@ const CartTable = () => {
 
   const primaryColor = "rgb(63, 82, 138)";
   const lightText = "#ffffff";
-
-  useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("User not authenticated.");
-
-        const response = await axios.get("http://localhost:8000/api/cart", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setCartItems(response.data || []);
-      } catch (err) {
-        setError("Failed to load cart items.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCartItems();
-  }, []);
 
   const handleSelectItem = (itemId) => {
     setSelectedItems((prev) =>
@@ -63,6 +42,7 @@ const CartTable = () => {
         setCartItems((prevItems) =>
           prevItems.filter((item) => item.id !== itemId)
         );
+        onCartUpdate && onCartUpdate();
       } else {
         alert("Failed to remove item.");
       }
@@ -70,6 +50,105 @@ const CartTable = () => {
       alert("Failed to remove item.");
     }
   };
+
+  const fetchCartItems = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User not authenticated.");
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get("http://localhost:8000/api/cart", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setCartItems(response.data || []);
+      setError(null); // Clear any previous errors
+    } catch (err) {
+      console.error("Error fetching cart items:", err);
+      setError("Failed to load cart items.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuantityChange = async (itemId, newQuantity) => {
+    console.log(`Updating quantity for item ${itemId} to ${newQuantity}`);
+    
+    // Don't allow quantities less than 1
+    if (newQuantity < 1) {
+      console.log("Quantity must be at least 1");
+      return;
+    }
+    
+    // Store original item for potential revert
+    const originalItem = cartItems.find(item => item.id === itemId);
+    if (!originalItem) {
+      console.error("Item not found in cart");
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("No authentication token found");
+        alert("Please login to update your cart.");
+        return;
+      }
+      
+      // Create a temporary copy of the cart items
+      const updatedItems = cartItems.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+      
+      // Update UI immediately for better user experience
+      setCartItems(updatedItems);
+      onCartUpdate && onCartUpdate();
+      
+      // Send request to server
+      const response = await axios.put(
+        `http://localhost:8000/api/cart/${itemId}`,
+        { quantity: newQuantity },
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      );
+      
+      console.log("Server response:", response);
+      
+      // Accept any 2xx status code as success
+      if (response.status < 200 || response.status >= 300) {
+        console.log("Server returned error status");
+        // Revert the UI change
+        setCartItems(prev => prev.map(item => 
+          item.id === itemId ? { ...originalItem } : item
+        ));
+        alert(response.data?.message || "Failed to update quantity. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+      // Revert the UI change
+      setCartItems(prev => prev.map(item => 
+        item.id === itemId ? { ...originalItem } : item
+      ));
+      
+      // Provide more specific error message
+      const errorMsg = err.response?.data?.message || 
+                      err.response?.statusText || 
+                      "Network error updating quantity";
+      alert(`Failed to update quantity: ${errorMsg}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalQuantity = cartItems
@@ -118,6 +197,7 @@ const CartTable = () => {
           (item) => !selectedItems.includes(item.id)
         );
         setCartItems(remainingItems);
+        onCartUpdate && onCartUpdate();
 
         setSelectedItems([]);
         setShowSummary(false);
@@ -144,9 +224,14 @@ const CartTable = () => {
   if (error)
     return <p className="text-danger text-center fw-bold">{error}</p>;
 
+  // If in summary mode, show only selected items
+  const displayItems = summaryMode 
+    ? cartItems.filter(item => selectedItems.includes(item.id)) 
+    : cartItems;
+
   return (
     <div>
-      <h5>Total Items in Cart: {totalItems}</h5>
+      {!summaryMode && <h5>Total Items in Cart: {totalItems}</h5>}
       <div className="table-responsive mt-3">
         <table className="table table-bordered shadow-sm">
           <thead
@@ -154,51 +239,89 @@ const CartTable = () => {
             style={{ backgroundColor: primaryColor, color: lightText }}
           >
             <tr>
-              <th></th>
-              <th className = "text-white">Product</th>
-              <th className = "text-white">Price</th>
-              <th className = "text-white">Quantity</th>
-              <th className = "text-white">Total</th>
-              <th className = "text-white">Action</th>
+              {!summaryMode && <th></th>}
+              <th className="text-white">Product</th>
+              <th className="text-white">Price</th>
+              <th className="text-white">Quantity</th>
+              <th className="text-white">Total</th>
+              {!summaryMode && <th className="text-white">Action</th>}
             </tr>
           </thead>
           <tbody>
-            {cartItems.length > 0 ? (
-              cartItems.map((item) => (
+            {displayItems.length > 0 ? (
+              displayItems.map((item) => (
                 <tr key={item.id}>
-                  <td className="text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleSelectItem(item.id)}
-                    />
-                  </td>
+                  {!summaryMode && (
+                    <td className="text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleSelectItem(item.id)}
+                      />
+                    </td>
+                  )}
                   <td>{item.name}</td>
                   <td>₱{item.price}</td>
-                  <td>{item.quantity}</td>
-                  <td>₱{item.price * item.quantity}</td>
                   <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleRemoveItem(item.id)}
-                    >
-                      Remove
-                    </Button>
+                    {!summaryMode ? (
+                      <div className="input-group">
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                          onClick={() => handleQuantityChange(item.id, parseInt(item.quantity) - 1)}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          className="form-control form-control-sm text-center"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (val && val > 0) {
+                              handleQuantityChange(item.id, val);
+                            }
+                          }}
+                          style={{ width: "60px" }}
+                        />
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                          onClick={() => handleQuantityChange(item.id, parseInt(item.quantity) + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    ) : (
+                      item.quantity
+                    )}
                   </td>
+                  <td>₱{item.price * item.quantity}</td>
+                  {!summaryMode && (
+                    <td>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleRemoveItem(item.id)}
+                      >
+                        Remove
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center text-muted fw-bold py-3">
-                  Your cart is empty.
+                <td colSpan={summaryMode ? "4" : "6"} className="text-center text-muted fw-bold py-3">
+                  {summaryMode ? "No items selected." : "Your cart is empty."}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
 
-        {cartItems.length > 0 && (
+        {cartItems.length > 0 && !summaryMode && (
           <Button
             variant="primary"
             className="mt-3"
@@ -215,10 +338,10 @@ const CartTable = () => {
               e.target.style.borderColor = "rgb(66, 83, 136)";
             }}
             onClick={() => setShowSummary(true)}
-        >
-          Checkout Selected
-        </Button>
-        
+            disabled={selectedItems.length === 0}
+          >
+            Checkout Selected
+          </Button>
         )}
       </div>
 
@@ -271,7 +394,7 @@ const CartTable = () => {
                       required
                     >
                       <option value="" disabled>Select a payment method</option>
-                      <option value="Gcash">Cash on Delivery</option>
+                      <option value="Cash on Delivery">Cash on Delivery</option>
                       <option value="Gcash">Gcash</option>
                       <option value="Maya">Maya</option>
                       <option value="Credit/Debit Card">Credit/Debit Card</option>
@@ -284,6 +407,7 @@ const CartTable = () => {
                   <Button
                     style={{ backgroundColor: primaryColor, borderColor: primaryColor }}
                     onClick={() => setCheckoutStep(2)}
+                    disabled={selectedItems.length === 0}
                   >
                     Next
                   </Button>
@@ -292,7 +416,10 @@ const CartTable = () => {
                     Checkout
                   </Button>
                 )}
-                <Button variant="secondary" onClick={() => setShowSummary(false)}>
+                <Button variant="secondary" onClick={() => {
+                  setShowSummary(false);
+                  setCheckoutStep(1);
+                }}>
                   Cancel
                 </Button>
               </div>

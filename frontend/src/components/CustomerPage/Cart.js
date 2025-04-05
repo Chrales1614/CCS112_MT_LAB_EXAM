@@ -1,14 +1,53 @@
-//Cart.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import CartTable from "./CartTable";
 import OrderTable from "../DefaultPage/OrderTable";
+import Header from "../DefaultPage/Header";
 
 const Cart = () => {
     const [view, setView] = useState("cart");
     const [showSummary, setShowSummary] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
+
+    const fetchCartCount = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            
+            const response = await axios.get("http://localhost:8000/api/cart-count", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setCartCount(response.data.count);
+        } catch (err) {
+            console.error("Failed to fetch cart count:", err);
+            // Fallback to counting items locally if API fails
+            const fallbackToken = localStorage.getItem("token");
+            if (fallbackToken) {
+                const response = await axios.get("http://localhost:8000/api/cart", {
+                    headers: { Authorization: `Bearer ${fallbackToken}` }
+                });
+                setCartCount(response.data?.length || 0);
+            }
+        }
+    };
+
+    const handleCartUpdate = () => {
+        fetchCartCount();
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setIsAuthenticated(true);
+            fetchCartCount();
+        } else {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
 
     const handleCheckout = async () => {
         alert("Order placed successfully!");
@@ -16,44 +55,48 @@ const Cart = () => {
     };
 
     return (
-        <div className="container mt-4">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3>My {view === "cart" ? "Cart" : "Orders"}</h3>
-            </div>
-            <div className="btn-group mb-3">
-                <button className={`btn ${view === "cart" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setView("cart")}>
-                    Cart
-                </button>
-                <button className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`} onClick={() => setView("orders")}>
-                    Orders
-                </button>
-            </div>
-            <div className="card p-3">
-                {view === "cart" ? <CartTable /> : <OrderTable />}
-            </div>
+        <>
+            <Header cartCount={cartCount} isAuthenticated={isAuthenticated} />
+            
+            <div className="container mt-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h3>My {view === "cart" ? "Cart" : "Orders"}</h3>
+                </div>
+                <div className="btn-group mb-3">
+                    <button className={`btn ${view === "cart" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setView("cart")}>
+                        Cart
+                    </button>
+                    <button className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`} onClick={() => setView("orders")}>
+                        Orders
+                    </button>
+                </div>
+                <div className="card p-3">
+                    {view === "cart" ? <CartTable onCartUpdate={handleCartUpdate} /> : <OrderTable />}
+                </div>
 
-            {showSummary && (
-                <div className="modal show d-block" tabIndex="-1">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Order Summary</h5>
-                                <button type="button" className="btn-close" onClick={() => setShowSummary(false)}></button>
-                            </div>
-                            <div className="modal-body">
-                                <CartTable summaryMode={true} />
-                            </div>
-                            <div className="modal-footer">
-                                <button className="btn btn-success" onClick={handleCheckout}>Confirm Order</button>
-                                <button className="btn btn-secondary" onClick={() => setShowSummary(false)}>Cancel</button>
+                {showSummary && (
+                    <div className="modal show d-block" tabIndex="-1">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Order Summary</h5>
+                                    <button type="button" className="btn-close" onClick={() => setShowSummary(false)}></button>
+                                </div>
+                                <div className="modal-body">
+                                    <CartTable summaryMode={true} />
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="btn btn-success" onClick={handleCheckout}>Confirm Order</button>
+                                    <button className="btn btn-secondary" onClick={() => setShowSummary(false)}>Cancel</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            <button onClick={() => navigate(-1)} className="btn btn-outline-dark mt-3">⬅ Back</button>
-        </div>
+                <button onClick={() => navigate(-1)} className="btn btn-outline-dark mt-3">⬅ Back</button>
+            </div>
+        </>
     );
 };
 
