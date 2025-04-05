@@ -252,17 +252,15 @@ const OrdersTable = () => {
                 <h5 className="modal-title">Confirm Order Completion</h5>
                 <button
                   type="button"
-                  className="close"
+                  className="btn-close"
                   onClick={() => setShowConfirmModal(false)}
-                >
-                  &times;
-                </button>
+                ></button>
               </div>
               <div className="modal-body">
                 <p>
                   Are you sure you want to mark order #{selectedOrder.id} as complete?
                 </p>
-                <h5>Order Summary</h5>
+                <h5 className="fw-bold">Order Summary</h5>
                 {orderItems.length > 0 ? (
                   <>
                     {orderItems.map((item) => (
