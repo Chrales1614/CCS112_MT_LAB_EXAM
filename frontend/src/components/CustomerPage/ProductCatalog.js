@@ -10,7 +10,7 @@ const ProductCatalog = ({ products }) => {
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [hoveredCard, setHoveredCard] = useState(null); // Track hovered card
+    const [hoveredButton, setHoveredButton] = useState(null); // Track which button is hovered
 
     const handleShowModal = (product) => {
         const token = localStorage.getItem("token");
@@ -73,30 +73,7 @@ const ProductCatalog = ({ products }) => {
             setLoading(false);
         }
     };
-
-    // Styles
-    const cardStyle = (productId) => ({
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        transform: hoveredCard === productId ? "translateY(-8px)" : "none", // Elevate on hover
-        boxShadow:
-            hoveredCard === productId
-                ? "0 12px 20px rgba(0, 0, 0, 0.2)"
-                : "0 4px 8px rgba(0, 0, 0, 0.1)",
-    });
-
-    const buttonStyle = {
-        backgroundColor: "rgb(33, 41, 65)", // Default color
-        color: "white",
-        border: "none",
-        transition: "background-color 0.3s ease",
-    };
-
-    const buttonHoverStyle = {
-        backgroundColor: "rgb(72, 79, 121)", // Hover color
-    };
-
-    const [isButtonHovered, setIsButtonHovered] = useState(false);
-
+    
     return (
         <div className="row">
             <div className="col-12 mb-4">
@@ -111,9 +88,19 @@ const ProductCatalog = ({ products }) => {
                     <div key={product.id} className="col-md-4 mb-4">
                         <div
                             className="card h-100"
-                            style={cardStyle(product.id)} // Apply hover style
-                            onMouseEnter={() => setHoveredCard(product.id)} // Track hover
-                            onMouseLeave={() => setHoveredCard(null)}
+                            style={{
+                                transition: "transform 0.3s, box-shadow 0.3s",
+                                cursor: "pointer",
+                                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-5px)";
+                                e.currentTarget.style.boxShadow = "0 8px 20px rgba(0, 0, 0, 0.2)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.1)";
+                            }}
                         >
                             <div style={{ height: "400px", overflow: "hidden" }}>
                                 <img
@@ -127,18 +114,20 @@ const ProductCatalog = ({ products }) => {
                                 <h5 className="card-title">{product.name}</h5>
                                 <p className="card-text flex-grow-1">{product.description}</p>
                                 <div className="mt-auto">
-                                    <p className="card-text">
-                                        <strong>₱{product.price}</strong>
-                                    </p>
+                                    <p className="card-text"><strong>₱{product.price}</strong></p>
                                     <button
                                         className="btn w-100"
-                                        style={{
-                                            ...buttonStyle,
-                                            ...(isButtonHovered ? buttonHoverStyle : {}),
-                                        }}
-                                        onMouseEnter={() => setIsButtonHovered(true)}
-                                        onMouseLeave={() => setIsButtonHovered(false)}
                                         onClick={() => handleShowModal(product)}
+                                        style={{
+                                            background: hoveredButton === product.id
+                                                ? "rgb(72, 79, 121)"
+                                                : "rgb(33, 41, 65)",
+                                            color: "#fff",
+                                            border: "none",
+                                            transition: "background 0.3s"
+                                        }}
+                                        onMouseEnter={() => setHoveredButton(product.id)}
+                                        onMouseLeave={() => setHoveredButton(null)}
                                     >
                                         Add to Cart
                                     </button>
@@ -156,18 +145,10 @@ const ProductCatalog = ({ products }) => {
                         <Modal.Title>{selectedProduct.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <img
-                            src={selectedProduct.image}
-                            className="img-fluid mb-3"
-                            alt={selectedProduct.name}
-                        />
+                        <img src={selectedProduct.image} className="img-fluid mb-3" alt={selectedProduct.name} />
                         <p>{selectedProduct.description}</p>
-                        <p>
-                            <strong>Price:</strong> ₱{selectedProduct.price}
-                        </p>
-                        <p>
-                            <strong>Stock:</strong> {selectedProduct.stock}
-                        </p>
+                        <p><strong>Price:</strong> ₱{selectedProduct.price}</p>
+                        <p><strong>Stock:</strong> {selectedProduct.stock}</p>
                         {error && <p className="text-danger">{error}</p>}
                         <Form>
                             <Form.Group controlId="quantity">
@@ -187,11 +168,11 @@ const ProductCatalog = ({ products }) => {
                         </Button>
                         <Button
                             style={{
-                                ...buttonStyle,
-                                ...(isButtonHovered ? buttonHoverStyle : {}),
+                                backgroundColor: "rgb(33, 41, 65)",
+                                border: "none"
                             }}
-                            onMouseEnter={() => setIsButtonHovered(true)}
-                            onMouseLeave={() => setIsButtonHovered(false)}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = "rgb(72, 79, 121)"}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = "rgb(33, 41, 65)"}
                             onClick={handleAddToCart}
                             disabled={loading}
                         >
