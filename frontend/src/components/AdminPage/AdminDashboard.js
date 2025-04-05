@@ -35,12 +35,6 @@ const  AdminDashboard = () => {
     return (
         <div className="container mt-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-         
-
-                <div className="text-center mb-4">
-                <h2 style={{ color: 'brown' }}>Admin Dashboard</h2>
-                    <p>Monitor sales and track inventory</p>
-                </div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <div className="btn-group">
                         <button className={`btn ${view === "products" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setView("products")}>Products</button>
