@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminProductsTable from "./AdminProductsTable";
 import OrdersTable from "./OrdersTable";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const  AdminDashboard = () => {
+const AdminDashboard = () => {
     const [view, setView] = useState("products");
     const [showAddModal, setShowAddModal] = useState(false);
     const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", stock: "", image: "" });
     const [loading, setLoading] = useState(false);
+    // Add a state to track when products are updated
+    const [productsUpdated, setProductsUpdated] = useState(0);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -25,6 +27,8 @@ const  AdminDashboard = () => {
             });
             setShowAddModal(false);
             setNewProduct({ name: "", description: "", price: "", stock: "", image: "" });
+            // Increment the counter to trigger a reload of products
+            setProductsUpdated(prev => prev + 1);
         } catch (error) {
             console.error("Error adding product:", error);
         } finally {
@@ -48,7 +52,8 @@ const  AdminDashboard = () => {
                     {/* Wrap the table in a responsive container */}
                     {view === "products" ? (
                         <div className="table-responsive">
-                            <AdminProductsTable />
+                            {/* Pass the productsUpdated state as a prop to trigger re-renders */}
+                            <AdminProductsTable key={productsUpdated} refreshTrigger={productsUpdated} />
                         </div>
                     ) : (
                         <div className="table-responsive">
