@@ -4,7 +4,6 @@
     flex-direction: column;
     height: 100%;
     background-color: #f4f4f9;
-    padding: 20px;
     box-sizing: border-box;  /* Prevents padding from affecting the container size */
 }
 
@@ -23,7 +22,6 @@
     width: 100%;  /* Make the table take up the full width of the container */
     border-collapse: collapse;
     table-layout: auto;
-    margin-top: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -37,6 +35,7 @@
     text-align: left;
     border-bottom: 1px solid #ddd;
     font-size: 16px;  /* Ensuring readability */
+    margin : 0;
 }
 
 /* Table header styling */

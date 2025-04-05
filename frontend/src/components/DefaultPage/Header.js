@@ -43,12 +43,12 @@ const Header = ({ cartCount = 0, isAuthenticated = false }) => {
         <>
             <Navbar 
                 expand="lg" 
-                className="shadow-lg p-3 mb-3 rounded border-0" 
+                className="shadow-lg p-3 mb-3 border-0" 
                 style={{ 
-                    background: "linear-gradient(135deg, #3E2723, #795548)", 
+                    background: "linear-gradient(135deg,rgb(33, 41, 65),rgb(72, 79, 121))", 
                     color: "#FFF", 
                     boxSizing: "border-box", 
-                    width: "100%" 
+                    width: "100%"
                 }}
             >
                 <Container fluid>

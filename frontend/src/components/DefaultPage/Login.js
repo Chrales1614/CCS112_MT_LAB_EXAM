@@ -32,7 +32,54 @@ const Login = ({ inModal = false, onSuccess = null }) => {
         }
     };
 
-    // If inside a modal, render a simplified version
+    const inputStyle = {
+        backgroundColor: "#ffffff",
+        border: "1px solid rgb(72, 79, 121)",
+        color: "#212529",
+        padding: "10px",
+        borderRadius: "8px"
+    };
+
+    const buttonStyle = {
+        backgroundColor: "rgb(72, 79, 121)",
+        color: "#ffffff",
+        fontWeight: "bold",
+        padding: "12px",
+        borderRadius: "8px",
+        transition: "background-color 0.3s ease"
+    };
+
+    const buttonHoverStyle = {
+        backgroundColor: "rgb(90, 97, 139)"
+    };
+
+    const cardStyle = {
+        maxWidth: "420px",
+        backgroundColor: "rgb(33, 41, 65)",
+        borderRadius: "12px",
+        border: "1px solid rgb(72, 79, 121)",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        color: "#ffffff"
+    };
+
+    const fontStyle = {
+        fontFamily: "'Playfair Display', serif",
+        color: "#ffffff"
+    };
+
+    const linkStyle = {
+        color: "rgb(140, 146, 185)",
+        textDecoration: "underline"
+    };
+
+    const [hover, setHover] = useState(false);
+
+    const combinedButtonStyle = {
+        ...buttonStyle,
+        ...(hover ? buttonHoverStyle : {})
+    };
+
+    // If inside a modal
     if (inModal) {
         return (
             <div>
@@ -46,8 +93,8 @@ const Login = ({ inModal = false, onSuccess = null }) => {
                             value={formData.email} 
                             onChange={handleChange} 
                             required 
-                            className="form-control" 
-                            style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}
+                            className="form-control"
+                            style={inputStyle}
                         />
                     </div>
                     <div className="mb-3">
@@ -59,10 +106,18 @@ const Login = ({ inModal = false, onSuccess = null }) => {
                             onChange={handleChange} 
                             required 
                             className="form-control" 
-                            style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}
+                            style={inputStyle}
                         />
                     </div>
-                    <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Login</button>
+                    <button 
+                        type="submit" 
+                        className="btn w-100" 
+                        style={combinedButtonStyle}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                    >
+                        Login
+                    </button>
                 </form>
             </div>
         );
@@ -70,9 +125,9 @@ const Login = ({ inModal = false, onSuccess = null }) => {
 
     // Full page version
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#f4f1ea", fontFamily: "'Playfair Display', serif" }}>
-            <div className="card p-5 shadow-lg" style={{ maxWidth: "420px", backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #d3b17d", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-                <h2 className="text-center mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: "bold", color: "#8b6f47" }}>ElectroZone Login</h2>
+        <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "rgb(28, 34, 52)", fontFamily: "'Playfair Display', serif" }}>
+            <div className="card p-5 shadow-lg" style={cardStyle}>
+                <h2 className="text-center mb-4" style={{ ...fontStyle, fontWeight: "bold" }}>ElectroZone Login</h2>
                 {error && <p className="alert alert-danger">{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
@@ -83,8 +138,8 @@ const Login = ({ inModal = false, onSuccess = null }) => {
                             value={formData.email} 
                             onChange={handleChange} 
                             required 
-                            className="form-control" 
-                            style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}
+                            className="form-control"
+                            style={inputStyle}
                         />
                     </div>
                     <div className="mb-3">
@@ -95,14 +150,22 @@ const Login = ({ inModal = false, onSuccess = null }) => {
                             value={formData.password} 
                             onChange={handleChange} 
                             required 
-                            className="form-control" 
-                            style={{ backgroundColor: "#faf8f5", border: "1px solid #d3b17d", color: "#4a3b2f", padding: "10px", borderRadius: "8px" }}
+                            className="form-control"
+                            style={inputStyle}
                         />
                     </div>
-                    <button type="submit" className="btn w-100" style={{ backgroundColor: "#8b6f47", color: "#ffffff", fontWeight: "bold", padding: "12px", borderRadius: "8px" }}>Login</button>
+                    <button 
+                        type="submit" 
+                        className="btn w-100" 
+                        style={combinedButtonStyle}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                    >
+                        Login
+                    </button>
                 </form>
-                <p className="text-center mt-3" style={{ fontFamily: "'Playfair Display', serif", color: "#4a3b2f" }}>
-                    Don't have an account? <Link to="/register" style={{ color: "#8b6f47", textDecoration: "underline" }}>Register here</Link>
+                <p className="text-center mt-3" style={fontStyle}>
+                    Don't have an account? <Link to="/register" style={linkStyle}>Register here</Link>
                 </p>
             </div>
         </div>

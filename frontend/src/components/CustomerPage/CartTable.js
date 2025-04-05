@@ -1,8 +1,6 @@
-//CartTable.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Spinner,  Button } from "react-bootstrap";
-import './CartTable.css'; // Make sure to import the CSS
+import { Spinner, Button } from "react-bootstrap";
 
 const CartTable = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -14,6 +12,9 @@ const CartTable = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [address, setAddress] = useState("");
+
+  const primaryColor = "rgb(63, 82, 138)";
+  const lightText = "#ffffff";
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -135,33 +136,37 @@ const CartTable = () => {
   if (loading)
     return (
       <div className="d-flex justify-content-center mt-4">
-        <Spinner animation="border" variant="warning" />
+        <Spinner animation="border" style={{ color: primaryColor }} />
         <span className="ms-3 text-muted">Loading...</span>
       </div>
     );
+
   if (error)
     return <p className="text-danger text-center fw-bold">{error}</p>;
 
   return (
     <div>
       <h5>Total Items in Cart: {totalItems}</h5>
-      <div className="table-responsive">
-        <table className="table shadow-lg table-custom">
-          <thead className="table-header text-center text-light">
+      <div className="table-responsive mt-3">
+        <table className="table table-bordered shadow-sm">
+          <thead
+            className="text-center"
+            style={{ backgroundColor: primaryColor, color: lightText }}
+          >
             <tr>
               <th></th>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Total</th>
-              <th>Action</th>
+              <th className = "text-white">Product</th>
+              <th className = "text-white">Price</th>
+              <th className = "text-white">Quantity</th>
+              <th className = "text-white">Total</th>
+              <th className = "text-white">Action</th>
             </tr>
           </thead>
           <tbody>
             {cartItems.length > 0 ? (
               cartItems.map((item) => (
                 <tr key={item.id}>
-                  <td>
+                  <td className="text-center">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
@@ -175,6 +180,7 @@ const CartTable = () => {
                   <td>
                     <Button
                       variant="danger"
+                      size="sm"
                       onClick={() => handleRemoveItem(item.id)}
                     >
                       Remove
@@ -196,10 +202,23 @@ const CartTable = () => {
           <Button
             variant="primary"
             className="mt-3"
+            style={{
+              backgroundColor: "rgb(66, 83, 136)",
+              borderColor: "rgb(66, 83, 136)",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = "rgb(33, 41, 65)";
+              e.target.style.borderColor = "rgb(33, 41, 65)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = "rgb(66, 83, 136)";
+              e.target.style.borderColor = "rgb(66, 83, 136)";
+            }}
             onClick={() => setShowSummary(true)}
-          >
-            Checkout Selected
-          </Button>
+        >
+          Checkout Selected
+        </Button>
+        
         )}
       </div>
 
@@ -207,7 +226,10 @@ const CartTable = () => {
         <div className="modal show d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
-              <div className="modal-header">
+              <div
+                className="modal-header"
+                style={{ backgroundColor: primaryColor, color: lightText }}
+              >
                 <h5 className="modal-title">Order Summary</h5>
                 <button
                   type="button"
@@ -260,7 +282,7 @@ const CartTable = () => {
               <div className="modal-footer">
                 {checkoutStep === 1 ? (
                   <Button
-                    variant="primary"
+                    style={{ backgroundColor: primaryColor, borderColor: primaryColor }}
                     onClick={() => setCheckoutStep(2)}
                   >
                     Next
@@ -270,10 +292,7 @@ const CartTable = () => {
                     Checkout
                   </Button>
                 )}
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowSummary(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowSummary(false)}>
                   Cancel
                 </Button>
               </div>

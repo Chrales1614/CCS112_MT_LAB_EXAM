@@ -10,16 +10,15 @@ const ProductCatalog = ({ products }) => {
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [hoveredButton, setHoveredButton] = useState(null); // Track which button is hovered
 
     const handleShowModal = (product) => {
         const token = localStorage.getItem("token");
-        
+
         if (!token) {
-            // Show login modal if user is not authenticated
             setSelectedProduct(product);
             setShowLoginModal(true);
         } else {
-            // Show add to cart modal if user is authenticated
             setSelectedProduct(product);
             setQuantity(1);
             setShowModal(true);
@@ -37,7 +36,6 @@ const ProductCatalog = ({ products }) => {
 
     const handleLoginSuccess = () => {
         setShowLoginModal(false);
-        // After successful login, show the add to cart modal
         setQuantity(1);
         setShowModal(true);
     };
@@ -46,16 +44,16 @@ const ProductCatalog = ({ products }) => {
         if (!selectedProduct) return;
         setLoading(true);
         setError(null);
-    
+
         try {
             const token = localStorage.getItem("token");
-    
+
             if (!token) {
                 setError("You need to be logged in to add to cart.");
                 setLoading(false);
                 return;
             }
-    
+
             const response = await axios.post(
                 "http://localhost:8000/api/cart",
                 {
@@ -66,7 +64,7 @@ const ProductCatalog = ({ products }) => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-    
+
             console.log("Added to cart:", response.data);
             handleCloseModal();
         } catch (err) {
@@ -75,25 +73,40 @@ const ProductCatalog = ({ products }) => {
             setLoading(false);
         }
     };
-
+    
     return (
         <div className="row">
             <div className="col-12 mb-4">
                 <h3 className="text-dark mb-2">Featured Product:</h3>
                 <hr className="mb-4" />
             </div>
-            
+
             {products.length === 0 ? (
                 <p>No products found.</p>
             ) : (
                 products.map((product) => (
                     <div key={product.id} className="col-md-4 mb-4">
-                        <div className="card h-100">
+                        <div
+                            className="card h-100"
+                            style={{
+                                transition: "transform 0.3s, box-shadow 0.3s",
+                                cursor: "pointer",
+                                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-5px)";
+                                e.currentTarget.style.boxShadow = "0 8px 20px rgba(0, 0, 0, 0.2)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.1)";
+                            }}
+                        >
                             <div style={{ height: "400px", overflow: "hidden" }}>
-                                <img 
-                                    src={product.image} 
-                                    className="card-img-top" 
-                                    alt={product.name} 
+                                <img
+                                    src={product.image}
+                                    className="card-img-top"
+                                    alt={product.name}
                                     style={{ objectFit: "cover", height: "100%", width: "100%" }}
                                 />
                             </div>
@@ -102,7 +115,20 @@ const ProductCatalog = ({ products }) => {
                                 <p className="card-text flex-grow-1">{product.description}</p>
                                 <div className="mt-auto">
                                     <p className="card-text"><strong>₱{product.price}</strong></p>
-                                    <button className="btn btn-primary w-100" onClick={() => handleShowModal(product)}>
+                                    <button
+                                        className="btn w-100"
+                                        onClick={() => handleShowModal(product)}
+                                        style={{
+                                            background: hoveredButton === product.id
+                                                ? "rgb(72, 79, 121)"
+                                                : "rgb(33, 41, 65)",
+                                            color: "#fff",
+                                            border: "none",
+                                            transition: "background 0.3s"
+                                        }}
+                                        onMouseEnter={() => setHoveredButton(product.id)}
+                                        onMouseLeave={() => setHoveredButton(null)}
+                                    >
                                         Add to Cart
                                     </button>
                                 </div>
@@ -127,11 +153,11 @@ const ProductCatalog = ({ products }) => {
                         <Form>
                             <Form.Group controlId="quantity">
                                 <Form.Label>Quantity</Form.Label>
-                                <Form.Control 
-                                    type="number" 
-                                    min="1" 
-                                    value={quantity} 
-                                    onChange={(e) => setQuantity(Number(e.target.value))} 
+                                <Form.Control
+                                    type="number"
+                                    min="1"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(Number(e.target.value))}
                                 />
                             </Form.Group>
                         </Form>
@@ -140,7 +166,16 @@ const ProductCatalog = ({ products }) => {
                         <Button variant="secondary" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button variant="primary" onClick={handleAddToCart} disabled={loading}>
+                        <Button
+                            style={{
+                                backgroundColor: "rgb(33, 41, 65)",
+                                border: "none"
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = "rgb(72, 79, 121)"}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = "rgb(33, 41, 65)"}
+                            onClick={handleAddToCart}
+                            disabled={loading}
+                        >
                             {loading ? "Adding..." : "Add to Cart"}
                         </Button>
                     </Modal.Footer>

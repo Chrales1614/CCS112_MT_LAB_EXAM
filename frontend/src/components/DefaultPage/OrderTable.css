@@ -18,8 +18,7 @@
 
 /* Table header */
 .table-responsive th {
-    background-color: #6b4226; /* Dark brown background for header */
-    color: white;
+    background-color: rgb(63, 82, 138);
     text-align: left;
     padding: 12px;
 }
