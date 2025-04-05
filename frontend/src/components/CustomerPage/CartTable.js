@@ -249,6 +249,7 @@ const CartTable = () => {
                       required
                     >
                       <option value="" disabled>Select a payment method</option>
+                      <option value="Gcash">Cash on Delivery</option>
                       <option value="Gcash">Gcash</option>
                       <option value="Maya">Maya</option>
                       <option value="Credit/Debit Card">Credit/Debit Card</option>

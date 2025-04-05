@@ -80,7 +80,7 @@ const Header = ({ cartCount = 0, isAuthenticated = false }) => {
                                         aria-label="Search"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        style={{ minWidth: "600px" }}
+                                        style={{ minWidth: "700px" }}
                                     />
                                     <Button variant="light" className="rounded-pill d-flex align-items-center" type="submit">
                                         <Search size={18} />
