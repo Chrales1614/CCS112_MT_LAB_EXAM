@@ -48,13 +48,13 @@ const OrderTable = () => {
     return (
         <div className="table-responsive">
             <Table striped bordered hover className="shadow-lg table-custom">
-                <thead className="table-header text-center text-light">
+                <thead className="table-header text-center">
                     <tr>
-                        <th>Order ID</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Total Price</th>
-                        <th>Status</th>
+                        <th className = "text-white">Order ID</th>
+                        <th className = "text-white">Product</th>
+                        <th className = "text-white">Quantity</th>
+                        <th className = "text-white">Total Price</th>
+                        <th className = "text-white">Status</th>
                     </tr>
                 </thead>
                 <tbody>
