@@ -206,14 +206,25 @@ const OrdersTable = () => {
               <div className="modal-body">
                 <h5>Order Items</h5>
                 {orderItems.length > 0 ? (
-                  <ul>
+                  <>
                     {orderItems.map((item) => (
-                      <li key={item.id}>
-                        {item.product?.name || "Unknown Product"} - ₱
-                        {(item.product?.price * item.quantity) || 0}
-                      </li>
+                      <div key={item.id} className="mb-3">
+                        <div><strong>{item.product?.name || "Unknown Product"}</strong></div>
+                        <div>Qty: {item.quantity}</div>
+                        <div>Price: ₱{(item.product?.price * item.quantity).toFixed(2)}</div>
+                        <hr />
+                      </div>
                     ))}
-                  </ul>
+                    <div className="text-end fw-bold">
+                      Total: ₱{orderItems
+                        .reduce(
+                          (sum, item) =>
+                            sum + (item.product?.price || 0) * item.quantity,
+                          0
+                        )
+                        .toFixed(2)}
+                    </div>
+                  </>
                 ) : (
                   <p>No items found.</p>
                 )}
@@ -230,6 +241,7 @@ const OrdersTable = () => {
           </div>
         </div>
       )}
+
 
       {/* Confirmation Modal */}
       {showConfirmModal && selectedOrder && (
@@ -248,18 +260,32 @@ const OrdersTable = () => {
               </div>
               <div className="modal-body">
                 <p>
-                  Are you sure you want to mark order #{selectedOrder.id} as
-                  complete?
+                  Are you sure you want to mark order #{selectedOrder.id} as complete?
                 </p>
                 <h5>Order Summary</h5>
-                <ul>
-                  {orderItems.map((item) => (
-                    <li key={item.id}>
-                      {item.product?.name || "Unknown Product"} -{" "}
-                      ₱{(item.product?.price * item.quantity) || 0}
-                    </li>
-                  ))}
-                </ul>
+                {orderItems.length > 0 ? (
+                  <>
+                    {orderItems.map((item) => (
+                      <div key={item.id} className="mb-3">
+                        <div><strong>{item.product?.name || "Unknown Product"}</strong></div>
+                        <div>Qty: {item.quantity}</div>
+                        <div>Price: ₱{(item.product?.price * item.quantity).toFixed(2)}</div>
+                        <hr />
+                      </div>
+                    ))}
+                    <div className="text-end fw-bold">
+                      Total: ₱{orderItems
+                        .reduce(
+                          (sum, item) =>
+                            sum + (item.product?.price || 0) * item.quantity,
+                          0
+                        )
+                        .toFixed(2)}
+                    </div>
+                  </>
+                ) : (
+                  <p>No items found.</p>
+                )}
               </div>
               <div className="modal-footer">
                 <button
@@ -268,10 +294,7 @@ const OrdersTable = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={confirmMarkAsComplete}
-                >
+                <button className="btn btn-primary" onClick={confirmMarkAsComplete}>
                   Confirm
                 </button>
               </div>
