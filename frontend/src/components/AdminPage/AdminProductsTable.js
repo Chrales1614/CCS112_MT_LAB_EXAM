@@ -112,27 +112,88 @@ const AdminProductsTable = () => {
             {deleteError && <div className="alert alert-danger mt-2">{deleteError}</div>}
             {/* Edit Modal */}
             {showEditModal && (
-                <div className="modal show d-block" tabIndex="-1">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Edit Product</h5>
-                                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
-                            </div>
-                            <div className="modal-body">
-                                <input type="text" className="form-control mb-2" name="name" value={formData.name} onChange={handleInputChange} placeholder="Name" />
-                                <input type="text" className="form-control mb-2" name="description" value={formData.description} onChange={handleInputChange} placeholder="Description" />
-                                <input type="number" className="form-control mb-2" name="price" value={formData.price} onChange={handleInputChange} placeholder="Price" />
-                                <input type="number" className="form-control mb-2" name="stock" value={formData.stock} onChange={handleInputChange} placeholder="Stock" />
-                                <input type="text" className="form-control mb-2" name="image" value={formData.image} onChange={handleInputChange} placeholder="Image URL" />
-                            </div>
-                            <div className="modal-footer">
-                                <button className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancel</button>
-                                <button className="btn btn-primary" onClick={handleSave}>Save</button>
-                            </div>
-                        </div>
+            <div className="modal show d-block" tabIndex="-1">
+                <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                    <h5 className="modal-title">Edit Product</h5>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setShowEditModal(false)}
+                    ></button>
+                    </div>
+                    <div className="modal-body">
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Name</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="Enter product name"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Description</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        placeholder="Enter description"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Price (₱)</label>
+                        <input
+                        type="number"
+                        className="form-control"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        placeholder="Enter price"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Stock</label>
+                        <input
+                        type="number"
+                        className="form-control"
+                        name="stock"
+                        value={formData.stock}
+                        onChange={handleInputChange}
+                        placeholder="Enter stock"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Image URL</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        name="image"
+                        value={formData.image}
+                        onChange={handleInputChange}
+                        placeholder="Enter image URL"
+                        />
+                    </div>
+                    </div>
+                    <div className="modal-footer">
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => setShowEditModal(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button className="btn btn-primary" onClick={handleSave}>
+                        Save
+                    </button>
                     </div>
                 </div>
+                </div>
+            </div>
             )}
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (
