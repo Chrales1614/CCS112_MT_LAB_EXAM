@@ -7,7 +7,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Auth;
-//use Illuminate\Foundation\Auth\RegistersUsers;
+
 class OrderController extends Controller
 {
     public function checkout(Request $request)
@@ -17,10 +17,30 @@ class OrderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $cartItems = Cart::where('user_id', $user->id)->with('product')->get();
+        // Validate and retrieve the items from the request
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:carts,id,user_id,' . $user->id,
+            'items.*.quantity' => 'required|integer|min:1',
+            'address' => 'required|string',
+            'contact' => 'required|string',
+            'paymentMethod' => 'required|string',
+        ]);
+
+        $selectedItems = $request->input('items');
+        if (empty($selectedItems)) {
+            return response()->json(['message' => 'No items selected for checkout'], 400);
+        }
+
+        // Fetch only the selected cart items from the database
+        $cartItemIds = array_column($selectedItems, 'id');
+        $cartItems = Cart::where('user_id', $user->id)
+            ->whereIn('id', $cartItemIds)
+            ->with('product')
+            ->get();
 
         if ($cartItems->isEmpty()) {
-            return response()->json(['message' => 'Cart is empty'], 400);
+            return response()->json(['message' => 'Selected items not found in cart'], 400);
         }
 
         $totalPrice = 0;
@@ -31,12 +51,15 @@ class OrderController extends Controller
             $totalPrice += $item->product->price * $item->quantity;
         }
 
-        // Create order with checkout_date
+        // Create order with checkout_date and additional fields
         $order = Order::create([
             'user_id' => $user->id,
             'total_price' => $totalPrice,
             'status' => 'pending',
-            'checkout_date' => now() // Set checkout date
+            'checkout_date' => now(), // Set checkout date
+            'address' => $request->input('address'),
+            'contact' => $request->input('contact'),
+            'payment_method' => $request->input('paymentMethod'),
         ]);
 
         // Add order items and update stock
@@ -45,7 +68,7 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'quantity' => $item->quantity,
-                'price' => $item->product->price
+                'price' => $item->product->price,
             ]);
 
             // Reduce stock
@@ -53,12 +76,13 @@ class OrderController extends Controller
             $item->product->save();
         }
 
-        // Clear cart
-        Cart::where('user_id', $user->id)->delete();
+        // Remove only the checked-out items from the cart
+        Cart::where('user_id', $user->id)
+            ->whereIn('id', $cartItemIds)
+            ->delete();
 
         return response()->json(['message' => 'Checkout successful', 'order_id' => $order->id]);
     }
-
 
     public function index()
     {
@@ -102,7 +126,6 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-
     public function markAsComplete($id)
     {
         $user = Auth::user();
@@ -125,5 +148,4 @@ class OrderController extends Controller
 
         return response()->json(['message' => 'Order marked as complete']);
     }
-
 }

@@ -41,9 +41,24 @@ const AdminDashboard = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <div className="btn-group">
-                        <button className={`btn ${view === "products" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setView("products")}>Products</button>
-                        <button className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`} onClick={() => setView("orders")}>Orders</button>
-                    </div>
+                    <button
+                        className={`btn ${view === "products" ? "" : "btn-outline-secondary"}`}
+                        onClick={() => setView("products")}
+                        style={{
+                            backgroundColor: view === "products" ? "rgb(1, 0, 128)" : "transparent",
+                            borderColor: "rgb(1, 0, 128)",
+                            color: view === "products" ? "white" : "rgb(1, 0, 128)"
+                        }}
+                    >
+                        Products
+                    </button>
+                    <button
+                        className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`}
+                        onClick={() => setView("orders")}
+                    >
+                        Orders
+                    </button>
+                      </div>
                     {view === "products" && (
                         <button className="btn btn-success" onClick={() => setShowAddModal(true)}>Add Product</button>
                     )}

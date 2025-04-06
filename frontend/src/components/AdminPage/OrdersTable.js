@@ -118,82 +118,104 @@ const OrdersTable = () => {
   };
 
   return (
-    <div>
-      <h4>Orders</h4>
+    <div className="container mt-4 mb-5 p-4 rounded ">
+      <h4 className="text-center mb-4">Orders Management</h4>
 
-      <div className="mb-3">
-        <h4>Filter</h4>
-        <label>Start Date:</label>
-        <input
-          type="date"
-          className="form-control"
-          value={startDate}
-          onChange={handleStartDateChange}
-        />
-
-        <label className="mt-2">End Date:</label>
-        <input
-          type="date"
-          className="form-control"
-          value={endDate}
-          onChange={handleEndDateChange}
-          min={startDate}
-        />
-
+      <div className="card p-3 mb-4 shadow-sm">
+        <h5 className="card-title">Filter Orders</h5>
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label className="form-label">Start Date:</label>
+            <input
+              type="date"
+              className="form-control"
+              value={startDate}
+              onChange={handleStartDateChange}
+            />
+          </div>
+          <div className="col-md-6">
+            <label className="form-label">End Date:</label>
+            <input
+              type="date"
+              className="form-control"
+              value={endDate}
+              onChange={handleEndDateChange}
+              min={startDate}
+            />
+          </div>
+        </div>
         {dateError && <p className="text-danger mt-2">{dateError}</p>}
       </div>
 
       {loading ? (
-        <p>Loading orders...</p>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Loading orders...</p>
+        </div>
       ) : (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Total Price</th>
-              <th>Checkout Date</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id}</td> 
-                <td>₱{parseFloat(order.total_price).toFixed(2)}</td>
-                <td>
-                {order.checkout_date 
-                  ? new Date(order.checkout_date).toLocaleString("en-PH", { timeZone: "Asia/Manila" }) 
-                  : "N/A"}
-              </td>
-
-                <td>{order.status}</td>
-                <td>
-                  <button
-                    className="btn btn-info btn-sm me-2"
-                    onClick={() => handleViewDetails(order)}
-                  >
-                    View Details
-                  </button>
-                  {order.status !== "completed" && (
-                    <button
-                      className="btn btn-warning btn-sm"
-                      onClick={() => handleMarkAsComplete(order)}
-                    >
-                      Mark as Complete
-                    </button>
-                  )}
-                </td>
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover shadow-sm">
+            <thead className="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Total Price</th>
+                <th>Checkout Date</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody style={{ cursor: "pointer", backgroundColor: "#f8f9fa", justifyContent: "center", display: "flex-column" }}>
+              {filteredOrders.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>₱{parseFloat(order.total_price).toFixed(2)}</td>
+                  <td>
+                    {order.checkout_date
+                      ? new Date(order.checkout_date).toLocaleString("en-PH", {
+                          timeZone: "Asia/Manila",
+                        })
+                      : "N/A"}
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        order.status === "completed"
+                          ? "bg-success text-light py-3 px-3" 
+                          : "bg-warning text-dark py-3 px-4"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-info btn-sm"
+                      onClick={() => handleViewDetails(order)}
+                    >
+                      View Details
+                    </button>
+                    {order.status !== "completed" && (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => handleMarkAsComplete(order)}
+                      >
+                        Mark as Complete
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Order Items Modal */}
       {showModal && selectedOrder && (
         <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-dialog">
+          <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Order #{selectedOrder.id} Details</h5>
@@ -209,14 +231,19 @@ const OrdersTable = () => {
                   <>
                     {orderItems.map((item) => (
                       <div key={item.id} className="mb-3">
-                        <div><strong>{item.product?.name || "Unknown Product"}</strong></div>
+                        <div>
+                          <strong>{item.product?.name || "Unknown Product"}</strong>
+                        </div>
                         <div>Qty: {item.quantity}</div>
-                        <div>Price: ₱{(item.product?.price * item.quantity).toFixed(2)}</div>
+                        <div>
+                          Price: ₱{(item.product?.price * item.quantity).toFixed(2)}
+                        </div>
                         <hr />
                       </div>
                     ))}
                     <div className="text-end fw-bold">
-                      Total: ₱{orderItems
+                      Total: ₱
+                      {orderItems
                         .reduce(
                           (sum, item) =>
                             sum + (item.product?.price || 0) * item.quantity,
@@ -242,7 +269,6 @@ const OrdersTable = () => {
         </div>
       )}
 
-
       {/* Confirmation Modal */}
       {showConfirmModal && selectedOrder && (
         <div className="modal show d-block" tabIndex="-1">
@@ -258,21 +284,27 @@ const OrdersTable = () => {
               </div>
               <div className="modal-body">
                 <p>
-                  Are you sure you want to mark order #{selectedOrder.id} as complete?
+                  Are you sure you want to mark order #{selectedOrder.id} as
+                  complete?
                 </p>
                 <h5 className="fw-bold">Order Summary</h5>
                 {orderItems.length > 0 ? (
                   <>
                     {orderItems.map((item) => (
                       <div key={item.id} className="mb-3">
-                        <div><strong>{item.product?.name || "Unknown Product"}</strong></div>
+                        <div>
+                          <strong>{item.product?.name || "Unknown Product"}</strong>
+                        </div>
                         <div>Qty: {item.quantity}</div>
-                        <div>Price: ₱{(item.product?.price * item.quantity).toFixed(2)}</div>
+                        <div>
+                          Price: ₱{(item.product?.price * item.quantity).toFixed(2)}
+                        </div>
                         <hr />
                       </div>
                     ))}
                     <div className="text-end fw-bold">
-                      Total: ₱{orderItems
+                      Total: ₱
+                      {orderItems
                         .reduce(
                           (sum, item) =>
                             sum + (item.product?.price || 0) * item.quantity,
@@ -292,7 +324,10 @@ const OrdersTable = () => {
                 >
                   Cancel
                 </button>
-                <button className="btn btn-primary" onClick={confirmMarkAsComplete}>
+                <button
+                  className="btn btn-primary"
+                  onClick={confirmMarkAsComplete}
+                >
                   Confirm
                 </button>
               </div>
