@@ -232,7 +232,7 @@ const CartTable = ({ summaryMode, onCartUpdate }) => {
   return (
     <div>
       {!summaryMode && <h5>Total Items in Cart: {totalItems}</h5>}
-      <div className="table-responsive mt-3">
+      <div className="table-responsive mt-3 rounded-3 flex flex-column">
         <table className="table table-bordered shadow-sm">
           <thead
             className="text-center"
@@ -244,7 +244,7 @@ const CartTable = ({ summaryMode, onCartUpdate }) => {
               <th className="text-white">Price</th>
               <th className="text-white">Quantity</th>
               <th className="text-white">Total</th>
-              {!summaryMode && <th className="text-white">Action</th>}
+              {!summaryMode && <th className="text-white , text-center">Action</th>}
             </tr>
           </thead>
           <tbody>
@@ -253,7 +253,7 @@ const CartTable = ({ summaryMode, onCartUpdate }) => {
                 <tr key={item.id}>
                   {!summaryMode && (
                     <td className="text-center">
-                      <input
+                      <input className="form-check-input" style={{ cursor: "pointer" , width: "20px", height: "20px" }}
                         type="checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={() => handleSelectItem(item.id)}
@@ -322,27 +322,29 @@ const CartTable = ({ summaryMode, onCartUpdate }) => {
         </table>
 
         {cartItems.length > 0 && !summaryMode && (
+          <div className="checkout-button-container d-flex justify-content-end">
           <Button
-            variant="primary"
-            className="mt-3"
-            style={{
-              backgroundColor: "rgb(66, 83, 136)",
-              borderColor: "rgb(66, 83, 136)",
-            }}
+            variant="background-color: rgb(63, 83, 136), font-color: white"
+            className="rounded px-5 py-2 mt-3 flex justify-content-center"
             onMouseOver={(e) => {
-              e.target.style.backgroundColor = "rgb(33, 41, 65)";
-              e.target.style.borderColor = "rgb(33, 41, 65)";
+              e.target.style.backgroundColor = "rgb(1, 0, 128)";  // Navy Blue
+              e.target.style.borderColor = "rgb(1, 0, 128)";      // Navy Blue
+              e.target.style.color = "white";                     // White text
             }}
             onMouseOut={(e) => {
-              e.target.style.backgroundColor = "rgb(66, 83, 136)";
-              e.target.style.borderColor = "rgb(66, 83, 136)";
+              e.target.style.backgroundColor = "rgb(66, 83, 136)"; // Original background color
+              e.target.style.borderColor = "rgb(66, 83, 136)";     // Original border color
+              e.target.style.color = "white";                     // White text
             }}
             onClick={() => setShowSummary(true)}
             disabled={selectedItems.length === 0}
           >
             Checkout Selected
           </Button>
+        </div>
+        
         )}
+
       </div>
 
       {showSummary && (

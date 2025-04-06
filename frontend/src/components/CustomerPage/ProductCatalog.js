@@ -118,7 +118,31 @@ const ProductCatalog = ({ products: initialProducts }) => {
                             id="dropdown-sort"
                             style={{
                                 backgroundColor: "rgb(245, 245, 245)",
-                                borderColor: "#ddd"
+                                borderColor: "#ddd",
+                                color: "#333",
+                                fontWeight: "bold",
+                                padding: "10px",
+                                borderRadius: "8px",
+                                transition: "background 0.3s, color 0.3s",
+                                cursor: "pointer",
+                                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                                marginLeft: "10px",
+                                fontSize: "16px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                padding: "10px 20px",
+                                height: "50px",
+                                lineHeight: "1.5",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                textDecoration: "none",
+                                textTransform: "uppercase",
+                                letterSpacing: "1px",
+                                borderRadius: "5px",
+                                transition: "background 0.3s, color 0.3s"
                             }}
                         >
                             {sortOption === "default" ? "Sort By" : 

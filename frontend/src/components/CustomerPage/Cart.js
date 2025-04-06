@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CartTable from "./CartTable";
@@ -62,15 +63,27 @@ const Cart = () => {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <h3>My {view === "cart" ? "Cart" : "Orders"}</h3>
                 </div>
-                <div className="btn-group mb-3">
-                    <button className={`btn ${view === "cart" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setView("cart")}>
-                        Cart
-                    </button>
-                    <button className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`} onClick={() => setView("orders")}>
-                        Orders
-                    </button>
+                <div className="btn-group mb-3 d-flex justify-content-center" role="group" aria-label="Basic example">
+                <button
+                    className={`btn ${view === "cart" ? "" : "btn-outline-secondary"}`}
+                    onClick={() => setView("cart")}
+                    style={{
+                        backgroundColor: view === "cart" ? "rgb(1, 0, 128)" : "transparent",
+                        borderColor: "rgb(1, 0, 128)",
+                        color: view === "cart" ? "white" : "rgb(1, 0, 128)"
+                    }}
+                >
+                    Cart
+                </button>
+                <button
+                    className={`btn ${view === "orders" ? "btn-secondary" : "btn-outline-secondary"}`}
+                    onClick={() => setView("orders")}
+                >
+                    Orders
+                </button>
                 </div>
-                <div className="card p-3">
+
+                <div className="card p-3 rounded-3 shadow-sm">
                     {view === "cart" ? <CartTable onCartUpdate={handleCartUpdate} /> : <OrderTable />}
                 </div>
 
@@ -94,7 +107,13 @@ const Cart = () => {
                     </div>
                 )}
 
-                <button onClick={() => navigate(-1)} className="btn btn-outline-dark mt-3">⬅ Back</button>
+                <button
+                onClick={() => navigate(-1)}
+                className="mt-4 flex items-center gap-3 px-5 py-3 rounded-xl font-semibold text-[16px] text-gray-700 bg-white border border-gray-300 shadow-md transition-all duration-300 
+                            hover:bg-gray-900 hover:text-white hover:border-gray-900 hover:shadow-lg"
+                >
+                <ArrowLeft size={20} className="stroke-[2.5]" /> Back
+                </button>
             </div>
         </>
     );

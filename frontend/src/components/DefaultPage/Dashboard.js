@@ -13,6 +13,7 @@ const Dashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
+        
         const token = localStorage.getItem("token");
         const storedUsername = localStorage.getItem("username") || "";
         const storedRole = localStorage.getItem("role") || "";
