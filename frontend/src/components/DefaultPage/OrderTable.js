@@ -47,45 +47,67 @@ const OrderTable = () => {
 
     return (
         <div className="table-responsive">
-            <Table striped bordered hover className="shadow-lg table-custom">
-                <thead className="table-header text-center">
-                    <tr>
-                        <th className = "text-white">Order ID</th>
-                        <th className = "text-white">Product</th>
-                        <th className = "text-white">Quantity</th>
-                        <th className = "text-white">Total Price</th>
-                        <th className = "text-white">Status</th>
+        <Table
+            striped
+            bordered
+            hover
+            className="shadow-lg table-custom"
+            style={{
+            tableLayout: "auto",
+            minWidth: "1000px", // Ensures fixed size for better data visibility
+            maxWidth: "100%",
+            }}
+        >
+            <thead className="table-header text-center">
+            <tr>
+                <th className="text-white" style={{ minWidth: "120px" }}>Order ID</th>
+                <th className="text-white" style={{ minWidth: "200px" }}>Product</th>
+                <th className="text-white" style={{ minWidth: "100px" }}>Quantity</th>
+                <th className="text-white" style={{ minWidth: "150px" }}>Total Price</th>
+                <th className="text-white" style={{ minWidth: "140px" }}>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {orders.length > 0 ? (
+                orders.map((order) =>
+                order.items.map((item) => (
+                    <tr
+                    key={item.id}
+                    className={selectedOrder === order.id ? "selected" : ""}
+                    onClick={() => handleRowClick(order.id)}
+                    >
+                    <td className="fw-semibold text-center">{order.id}</td>
+                    <td className="text-center">
+                        {item.product?.name || (
+                        <span className="text-muted">Unknown Product</span>
+                        )}
+                    </td>
+                    <td className="text-center">{item.quantity}</td>
+                    <td className="fw-bold text-center text-success">
+                        ₱
+                        {(item.product?.price * item.quantity).toLocaleString("en-PH", {
+                        minimumFractionDigits: 2,
+                        })}
+                    </td>
+                    <td className="text-center">
+                        <Badge bg={getStatusVariant(order.status)}>
+                        {order.status}
+                        </Badge>
+                    </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {orders.length > 0 ? (
-                        orders.map((order) =>
-                            order.items.map((item) => (
-                                <tr
-                                    key={item.id}
-                                    className={selectedOrder === order.id ? "selected" : ""}
-                                    onClick={() => handleRowClick(order.id)}
-                                >
-                                    <td className="fw-semibold text-center">{order.id}</td>
-                                    <td className="text-center">{item.product?.name || <span className="text-muted">Unknown Product</span>}</td>
-                                    <td className="text-center">{item.quantity}</td>
-                                    <td className="fw-bold text-center text-success">
-                                        ₱{(item.product?.price * item.quantity).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
-                                    </td>
-                                    <td className="text-center">
-                                        <Badge bg={getStatusVariant(order.status)}>{order.status}</Badge>
-                                    </td>
-                                </tr>
-                            ))
-                        )
-                    ) : (
-                        <tr>
-                            <td colSpan="5" className="text-center text-muted fw-bold py-3">No orders found.</td>
-                        </tr>
-                    )}
-                </tbody>
-            </Table>
+                ))
+                )
+            ) : (
+                <tr>
+                <td colSpan="5" className="text-center text-muted fw-bold py-3">
+                    No orders found.
+                </td>
+                </tr>
+            )}
+            </tbody>
+        </Table>
         </div>
+
     );
 };
 

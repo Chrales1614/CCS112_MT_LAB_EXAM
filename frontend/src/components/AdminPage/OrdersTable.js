@@ -185,48 +185,48 @@ const OrdersTable = () => {
               <th style={{ minWidth: "180px" }}>Action</th>
             </tr>
           </thead>
-          <tbody style={{ backgroundColor: "#f8f9fa" }}>
+          <tbody className= "table-header text-center" style={{ backgroundColor: "#f8f9fa" }}>
             {filteredOrders.map((order) => (
               <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>₱{parseFloat(order.total_price).toFixed(2)}</td>
-                <td>
-                  {order.checkout_date
-                    ? new Date(order.checkout_date).toLocaleString("en-PH", {
-                        timeZone: "Asia/Manila",
-                      })
-                    : "N/A"}
-                </td>
-                <td>
-                  <span
-                    className={`badge ${
-                      order.status === "completed"
-                        ? "bg-success text-light py-2 px-3"
-                        : "bg-warning text-dark py-2 px-3"
-                    }`}
+              <td className="text-center">{order.id}</td>
+              <td className="text-center">₱{parseFloat(order.total_price).toFixed(2)}</td>
+              <td className="text-center">
+                {order.checkout_date
+                  ? new Date(order.checkout_date).toLocaleString("en-PH", {
+                      timeZone: "Asia/Manila",
+                    })
+                  : "N/A"}
+              </td>
+              <td className="text-center">
+                <span
+                  className={`badge ${
+                    order.status === "completed"
+                      ? "bg-success text-light py-2 px-3"
+                      : "bg-warning text-dark py-2 px-3"
+                  }`}
+                >
+                  {order.status}
+                </span>
+              </td>
+              <td className="text-center">
+                <div className="d-flex justify-content-center gap-2">
+                  <button
+                    className="btn btn-info btn-sm"
+                    onClick={() => handleViewDetails(order)}
                   >
-                    {order.status}
-                  </span>
-                </td>
-                <td>
-                  <div className="d-flex gap-2">
+                    View Details
+                  </button>
+                  {order.status !== "completed" && (
                     <button
-                      className="btn btn-info btn-sm"
-                      onClick={() => handleViewDetails(order)}
+                      className="btn btn-warning btn-sm"
+                      onClick={() => handleMarkAsComplete(order)}
                     >
-                      View Details
+                      Mark as Complete
                     </button>
-                    {order.status !== "completed" && (
-                      <button
-                        className="btn btn-warning btn-sm"
-                        onClick={() => handleMarkAsComplete(order)}
-                      >
-                        Mark as Complete
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
+                  )}
+                </div>
+              </td>
+            </tr>            
             ))}
           </tbody>
         </table>
@@ -257,7 +257,7 @@ const OrdersTable = () => {
                     <strong>Address:</strong> {selectedOrder.customer?.address || "N/A"}
                   </p>
                   <p>
-                    <strong>Payment Method:</strong> {selectedOrder.paymentMethod || "N/A"}
+                    <strong>Payment Method:</strong> {selectedOrder.payment_method || "N/A"}
                   </p>
                 <hr />
 
