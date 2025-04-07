@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('total_price', 8, 2);
+            $table->string('payment_method')->nullable();
+            $table->text('address')->nullable(); // Make address nullable
+            $table->string('contact')->nullable(); // Add contact column
             $table->enum('status', ['pending', 'completed'])->default('pending');
-            $table->timestamp('checkout_date')->nullable(); // Add checkout_date
+            $table->timestamp('checkout_date')->nullable();
             $table->timestamps();
         });
     }

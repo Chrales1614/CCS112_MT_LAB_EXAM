@@ -91,7 +91,29 @@ class OrderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json(Order::with('user', 'items.product')->get());
+        $orders = Order::with('user', 'items.product')->get();
+
+        // Reshape the response
+        $orders = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'total_price' => $order->total_price,
+                'status' => $order->status,
+                'checkout_date' => $order->checkout_date,
+                'payment_method' => $order->payment_method,
+                'customer' => [
+                    'id' => $order->user->id,
+                    'name' => $order->user->name,
+                    'address' => $order->address,
+                ],
+                'items' => $order->items->map(function ($item) {
+                    $item->product_name = $item->product->name ?? 'Unknown Product';
+                    return $item;
+                }),
+            ];
+        });
+
+        return response()->json($orders);
     }
 
     public function myOrders()
@@ -123,7 +145,20 @@ class OrderController extends Controller
             $item->product_name = $item->product->name ?? 'Unknown Product';
         });
 
-        return response()->json($order);
+        // Reshape the response to match frontend expectations
+        return response()->json([
+            'id' => $order->id,
+            'total_price' => $order->total_price,
+            'status' => $order->status,
+            'checkout_date' => $order->checkout_date,
+            'payment_method' => $order->payment_method,
+            'customer' => [
+                'id' => $order->user->id,
+                'name' => $order->user->name,
+                'address' => $order->address,
+            ],
+            'items' => $order->items,
+        ]);
     }
 
     public function markAsComplete($id)

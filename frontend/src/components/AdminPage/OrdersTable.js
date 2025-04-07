@@ -13,6 +13,7 @@ const OrdersTable = () => {
   const [endDate, setEndDate] = useState("");
   const [dateError, setDateError] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isFetchingItems, setIsFetchingItems] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -49,6 +50,7 @@ const OrdersTable = () => {
       setLoading(false);
     }
   };
+
 
   const handleStartDateChange = (e) => {
     const newStartDate = e.target.value;
@@ -97,6 +99,7 @@ const OrdersTable = () => {
   };
 
   const fetchOrderItems = async (orderId) => {
+    setIsFetchingItems(true);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
@@ -105,12 +108,15 @@ const OrdersTable = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       setOrderItems(response.data.items || []);
+      setSelectedOrder(response.data);
     } catch (error) {
       console.error("Error fetching order items:", error);
+    } finally {
+      setIsFetchingItems(false);
     }
   };
+
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
     fetchOrderItems(order.id);
@@ -155,41 +161,55 @@ const OrdersTable = () => {
           <p className="mt-2">Loading orders...</p>
         </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-bordered table-hover shadow-sm">
-            <thead className="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Total Price</th>
-                <th>Checkout Date</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody style={{ cursor: "pointer", backgroundColor: "#f8f9fa", justifyContent: "center", display: "flex-column" }}>
-              {filteredOrders.map((order) => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>₱{parseFloat(order.total_price).toFixed(2)}</td>
-                  <td>
-                    {order.checkout_date
-                      ? new Date(order.checkout_date).toLocaleString("en-PH", {
-                          timeZone: "Asia/Manila",
-                        })
-                      : "N/A"}
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        order.status === "completed"
-                          ? "bg-success text-light py-3 px-3" 
-                          : "bg-warning text-dark py-3 px-4"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>
+        <div
+        style={{
+          width: "100%",
+          maxWidth: "1000px",
+          margin: "0 auto",
+          overflowX: "auto",
+        }}
+      >
+        <table
+          className="table table-bordered table-hover shadow-sm"
+          style={{
+            tableLayout: "auto",
+            minWidth: "900px",
+          }}
+        >
+          <thead className="table-light">
+            <tr>
+              <th style={{ minWidth: "80px" }}>ID</th>
+              <th style={{ minWidth: "120px" }}>Total Price</th>
+              <th style={{ minWidth: "200px" }}>Checkout Date</th>
+              <th style={{ minWidth: "120px" }}>Status</th>
+              <th style={{ minWidth: "180px" }}>Action</th>
+            </tr>
+          </thead>
+          <tbody style={{ backgroundColor: "#f8f9fa" }}>
+            {filteredOrders.map((order) => (
+              <tr key={order.id}>
+                <td>{order.id}</td>
+                <td>₱{parseFloat(order.total_price).toFixed(2)}</td>
+                <td>
+                  {order.checkout_date
+                    ? new Date(order.checkout_date).toLocaleString("en-PH", {
+                        timeZone: "Asia/Manila",
+                      })
+                    : "N/A"}
+                </td>
+                <td>
+                  <span
+                    className={`badge ${
+                      order.status === "completed"
+                        ? "bg-success text-light py-2 px-3"
+                        : "bg-warning text-dark py-2 px-3"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </td>
+                <td>
+                  <div className="d-flex gap-2">
                     <button
                       className="btn btn-info btn-sm"
                       onClick={() => handleViewDetails(order)}
@@ -204,12 +224,14 @@ const OrdersTable = () => {
                         Mark as Complete
                       </button>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       )}
 
       {/* Order Items Modal */}
@@ -226,6 +248,20 @@ const OrdersTable = () => {
                 />
               </div>
               <div className="modal-body">
+                {/* Add Customer Details Section */}
+                <h5>Customer Details</h5>
+                  <p>
+                    <strong>Name:</strong> {selectedOrder.customer?.name || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {selectedOrder.customer?.address || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Payment Method:</strong> {selectedOrder.paymentMethod || "N/A"}
+                  </p>
+                <hr />
+
+                {/* Existing Order Items Section */}
                 <h5>Order Items</h5>
                 {orderItems.length > 0 ? (
                   <>
@@ -284,9 +320,22 @@ const OrdersTable = () => {
               </div>
               <div className="modal-body">
                 <p>
-                  Are you sure you want to mark order #{selectedOrder.id} as
-                  complete?
+                  Are you sure you want to mark order #{selectedOrder.id} as complete?
                 </p>
+                {/* Add Customer Details Section */}
+                <h5 className="fw-bold">Customer Details</h5>
+                <p>
+                  <strong>Name:</strong> {selectedOrder.customer?.name || "N/A"}
+                </p>
+                <p>
+                  <strong>Address:</strong> {selectedOrder.customer?.address || "N/A"}
+                </p>
+                <p>
+                  <strong>Payment Method:</strong> {selectedOrder.paymentMethod || "N/A"}
+                </p>
+                <hr />
+
+                {/* Existing Order Summary Section */}
                 <h5 className="fw-bold">Order Summary</h5>
                 {orderItems.length > 0 ? (
                   <>
